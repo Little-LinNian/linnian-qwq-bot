@@ -27,6 +27,10 @@ import httpx
 from dateutil.parser import parse
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 import asyncio
+from lib.limiter import group_limiter_head, group_limiter_tail
+from lib.bank import Bank
+
+bank = Bank("./data/bank.json")
 
 try:
     import ujson as json
@@ -62,17 +66,9 @@ hitokotoArchiveOpen = True
 async def sendmsg(event: MessageEvent, rs: Relationship[MemberProfile, GroupProfile]):
     if not event.message.as_display() == "签到":
         return
-    if event.ctx.id in wait_list.keys():
-        if not wait_list[event.ctx.id]:
-            return
-        await rs.exec(MessageSend(
-            MessageChain.create(
-                [PlainText("此功能有10s cd qwq 且我只提醒一次qwq")]
-            )
-        ))
-        wait_list[event.ctx.id] = False
+    limit = await group_limiter_head(event=event, rs=rs, module_name=__file__,sleep_time=6)
+    if not limit:
         return
-
     userQQ = rs.ctx.id
     msg = event.message.as_display()
     nickname = rs.ctx.profile.nickname
@@ -82,9 +78,7 @@ async def sendmsg(event: MessageEvent, rs: Relationship[MemberProfile, GroupProf
             resp
         )
     )
-    wait_list[event.ctx.id] = True
-    await asyncio.sleep(10)
-    del wait_list[event.ctx.id]
+    await group_limiter_tail(event=event, module_name=__file__)
 
 
 class Status(Enum):
@@ -647,6 +641,7 @@ async def mainProgram(msg,  userQQ, nickname):
             resp = MessageChain.create(
                 [IMG.fromLocalFile(Path(f"{RESOURCES_BASE_PATH}/cache/{userQQ}.png").absolute())]
             )
+            await bank.deposit(userQQ, 60)
             return resp
         else:
             resp = MessageChain.create(

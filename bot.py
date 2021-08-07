@@ -13,19 +13,22 @@ from avilla.network.clients.aiohttp import AiohttpWebsocketClient
 from avilla.onebot.protocol import OnebotProtocol
 from avilla.event.message import MessageEvent
 import asyncio
+from lib.draw import prts_handle
 from loguru import logger
 from graia.saya import Saya
 from graia.saya.builtins.broadcast import BroadcastBehaviour
 from yarl import URL
 
 loop = asyncio.get_event_loop()
-
+loop.run_until_complete(prts_handle.init_prts_data())
 bcc = Broadcast(loop=loop)
 saya = Saya(broadcast=bcc)
 saya.install_behaviours(BroadcastBehaviour(bcc))
 with saya.module_context():
    saya.require("module.sign_in")
    saya.require("module.rua")
+   saya.require("module.draw_prts")
+   saya.require("module.ATM")
 session = aiohttp.ClientSession(loop=loop)
 app = Avilla(bcc, OnebotProtocol, {
     "ws": AiohttpWebsocketClient(session)} ,

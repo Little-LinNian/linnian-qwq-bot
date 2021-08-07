@@ -1,6 +1,6 @@
 from datetime import datetime
 from io import BytesIO
-from os import path
+from os import path, wait
 from pathlib import Path
 from PIL import Image as im
 from .rua_data.data_source import generate_gif
@@ -9,7 +9,7 @@ import loguru
 import os
 from graia.saya import Saya, Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
-
+from lib import limiter
 from avilla.execution.message import MessageSend
 from avilla.message.chain import MessageChain
 from avilla.relationship import Relationship
@@ -37,17 +37,9 @@ async def ruaer(id):
 async def rua(event: MessageEvent, rs: Relationship):
     if event.message.has(Notice) and event.message.get_first(PlainText).text == '搓':
         
-        if event.ctx.id in wait_list.keys():
-            if not wait_list[event.ctx.id]:
-                return
-            await rs.exec(MessageSend(
-                MessageChain.create(
-                    [PlainText("此功能有10s cd qwq 且我只提醒一次qwq")]
-                )
-            ))
-            wait_list[event.ctx.id] = False
+        limit = await limiter.group_limiter_head(event=event, rs=rs, module_name=__file__,sleep_time=6)
+        if not limit:
             return
-
 
         qid = event.message.get(Notice)[0].target
         url = await ruaer(qid)
@@ -58,9 +50,7 @@ async def rua(event: MessageEvent, rs: Relationship):
                 )
             )
         )
-        wait_list[event.ctx.id] = True
-        await asyncio.sleep(10)
-        del wait_list[event.ctx.id]
+        await limiter.group_limiter_tail(event=event,  module_name=__file__)
 
     else:
         pass
