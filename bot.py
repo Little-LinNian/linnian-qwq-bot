@@ -24,11 +24,13 @@ loop.run_until_complete(prts_handle.init_prts_data())
 bcc = Broadcast(loop=loop)
 saya = Saya(broadcast=bcc)
 saya.install_behaviours(BroadcastBehaviour(bcc))
+TICKET = False
 with saya.module_context():
    saya.require("module.sign_in")
    saya.require("module.rua")
    saya.require("module.draw_prts")
    saya.require("module.ATM")
+   # saya.require("module.tickets")
 session = aiohttp.ClientSession(loop=loop)
 app = Avilla(bcc, OnebotProtocol, {
     "ws": AiohttpWebsocketClient(session)} ,

@@ -2,6 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+draw_card/
+cache/
 
 # C extensions
 *.so

@@ -10,11 +10,10 @@ from avilla.builtins.profile import MemberProfile, GroupProfile
 from avilla.builtins.elements import PlainText, Notice
 from avilla.builtins.elements import Image as IMG
 from avilla.event.message import MessageEvent
+from lib import limiter
 from lib.draw import prts_handle
-from lib.limiter import group_limiter_head
-from lib.limiter import group_limiter_tail
 from lib import bank
-bank = bank.Bank("./data/bank.json")
+bank = bank.Bank("./data/bank.json","./data/bank_backup")
 saya = Saya.current()
 channel = Channel.current()
 
@@ -23,8 +22,7 @@ channel = Channel.current()
 async def sendmsg(event: MessageEvent, rs: Relationship[MemberProfile, GroupProfile]):
     if event.message.as_display() == "#方舟单抽":
 
-        if not await group_limiter_head(event=event, rs=rs, module_name=__file__+"one",sleep_time=6):
-            return
+        await limiter.limit("draw_prts",rs,4)
         try:
             await rs.exec(
                 MessageSend(
@@ -49,10 +47,8 @@ async def sendmsg(event: MessageEvent, rs: Relationship[MemberProfile, GroupProf
         await rs.exec(MessageSend(MessageChain.create([Notice(target=event.ctx.id)])))
         await asyncio.sleep(2)
         await rs.exec(MessageSend(resp))
-        await group_limiter_tail(event=event, module_name=__file__+"one")
     elif event.message.as_display() == "#方舟十连":
-        if not await group_limiter_head(event=event, rs=rs, module_name=__file__+"ten",sleep_time=15):
-            return
+        await limiter.limit("draw_prts_10",rs,6)
         try:
             await rs.exec(
                 MessageSend(
@@ -78,4 +74,3 @@ async def sendmsg(event: MessageEvent, rs: Relationship[MemberProfile, GroupProf
         await rs.exec(MessageSend(MessageChain.create([Notice(target=event.ctx.id)])))
         await asyncio.sleep(2)
         await rs.exec(MessageSend(resp))
-        await group_limiter_tail(event=event, module_name=__file__+"ten")

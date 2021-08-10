@@ -37,10 +37,7 @@ async def ruaer(id):
 async def rua(event: MessageEvent, rs: Relationship):
     if event.message.has(Notice) and event.message.get_first(PlainText).text == '搓':
         
-        limit = await limiter.group_limiter_head(event=event, rs=rs, module_name=__file__,sleep_time=6)
-        if not limit:
-            return
-
+        await limiter.limit("rua",rs,5)
         qid = event.message.get(Notice)[0].target
         url = await ruaer(qid)
         await rs.exec(
@@ -50,7 +47,5 @@ async def rua(event: MessageEvent, rs: Relationship):
                 )
             )
         )
-        await limiter.group_limiter_tail(event=event,  module_name=__file__)
-
     else:
         pass
