@@ -1,5 +1,30 @@
 # -*- coding:utf-8 -*-
 
+# 源代码来源许可证，代码有改动 repo: "https://github.com/opq-osc/opqqq-plugin"
+'''
+MIT License
+
+Copyright (c) 2020 fz6m
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+'''
+
 from pathlib import Path
 from graia.saya import Saya, Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
@@ -27,10 +52,10 @@ import httpx
 from dateutil.parser import parse
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 import asyncio
-from lib.limiter import group_limiter_head, group_limiter_tail
+from lib.limiter import limit
 from lib.bank import Bank
 
-bank = Bank("./data/bank.json")
+bank = Bank("./data/bank.json","./data/bank_backup")
 
 try:
     import ujson as json
@@ -66,9 +91,7 @@ hitokotoArchiveOpen = True
 async def sendmsg(event: MessageEvent, rs: Relationship[MemberProfile, GroupProfile]):
     if not event.message.as_display() == "签到":
         return
-    limit = await group_limiter_head(event=event, rs=rs, module_name=__file__,sleep_time=6)
-    if not limit:
-        return
+    await limit("sign-in",rs,5)
     userQQ = rs.ctx.id
     msg = event.message.as_display()
     nickname = rs.ctx.profile.nickname
@@ -78,9 +101,6 @@ async def sendmsg(event: MessageEvent, rs: Relationship[MemberProfile, GroupProf
             resp
         )
     )
-    await group_limiter_tail(event=event, module_name=__file__)
-
-
 class Status(Enum):
 
     SUCCESS = "_success"
@@ -641,7 +661,10 @@ async def mainProgram(msg,  userQQ, nickname):
             resp = MessageChain.create(
                 [IMG.fromLocalFile(Path(f"{RESOURCES_BASE_PATH}/cache/{userQQ}.png").absolute())]
             )
-            await bank.deposit(userQQ, 60)
+            try:
+                await bank.deposit(userQQ, 60)
+            except ValueError:
+                await bank.create_account(userQQ, 160)
             return resp
         else:
             resp = MessageChain.create(
