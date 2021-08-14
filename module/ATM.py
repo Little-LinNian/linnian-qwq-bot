@@ -14,7 +14,7 @@ from lib.bank import Bank
 from lib import limiter
 saya = Saya.current()
 channel = Channel.current()
-bank = Bank("./data/bank.json","./data/bank_backup")
+bank = Bank("./data/bank.json")
 
 
 @channel.use(ListenerSchema(listening_events=[MessageEvent]))

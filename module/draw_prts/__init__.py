@@ -13,7 +13,7 @@ from avilla.event.message import MessageEvent
 from lib import limiter
 from lib.draw import prts_handle
 from lib import bank
-bank = bank.Bank("./data/bank.json","./data/bank_backup")
+bank = bank.Bank("./data/bank.json")
 saya = Saya.current()
 channel = Channel.current()
 

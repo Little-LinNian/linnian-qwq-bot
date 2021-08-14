@@ -1,0 +1,20 @@
+2021-08-14 14:27:02.966 | INFO     | graia.saya:require:128 - module loading finished: module.rua
+2021-08-14 14:27:02.966 | DEBUG    | graia.saya:require:107 - require module.draw_prts
+2021-08-14 14:27:02.969 | INFO     | graia.saya:require:128 - module loading finished: module.draw_prts
+2021-08-14 14:27:02.969 | DEBUG    | graia.saya:require:107 - require module.ATM
+2021-08-14 14:27:02.972 | INFO     | graia.saya:require:128 - module loading finished: module.ATM
+2021-08-14 14:27:02.972 | DEBUG    | graia.saya:require:107 - require module.img2link
+2021-08-14 14:27:03.195 | INFO     | graia.saya:require:128 - module loading finished: module.img2link
+2021-08-14 14:27:03.195 | DEBUG    | graia.saya:require:107 - require module.two_in_one
+2021-08-14 14:27:03.197 | INFO     | graia.saya:require:128 - module loading finished: module.two_in_one
+2021-08-14 14:27:03.198 | DEBUG    | graia.saya:require:107 - require module.prme
+2021-08-14 14:27:03.200 | INFO     | graia.saya:require:128 - module loading finished: module.prme
+/home/linnian/linnian-qwq-bot/bot.py:39: DeprecationWarning: The object should be created within an async function
+  session = aiohttp.ClientSession(loop=loop)
+2021-08-14 14:27:04.456 | SUCCESS  | __main__:message_event_logger:62 - [From Group(id: 790047565 name: îÿ)ÿÿ`ÿÿ„ÿÑÿ„ÿÿÿ¤ÿÿÿ) Member(id: 1759130268 name:
+ÿƒÿeÿfÿ) MSG: Öÿÿ`ÿ_ÿÿ]
+^Z
+[1]+  Stopped                 python bot.py
+(venv) linnian@linnian-desktop:~/linnian-qwq-bot$ exit
+There are stopped jobs.
+(venv) linnian@linnian-desktop:~/linnian-qwq-bot$

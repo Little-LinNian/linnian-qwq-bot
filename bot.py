@@ -18,6 +18,8 @@ from loguru import logger
 from graia.saya import Saya
 from graia.saya.builtins.broadcast import BroadcastBehaviour
 from yarl import URL
+from lib.config import set_config_path
+set_config_path("config.yml")
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(prts_handle.init_prts_data())
@@ -30,6 +32,10 @@ with saya.module_context():
    saya.require("module.rua")
    saya.require("module.draw_prts")
    saya.require("module.ATM")
+   saya.require("module.img2link")
+   saya.require("module.two_in_one")
+   saya.require("module.prme")
+   saya.require("module.longtu")
    # saya.require("module.tickets")
 session = aiohttp.ClientSession(loop=loop)
 app = Avilla(bcc, OnebotProtocol, {

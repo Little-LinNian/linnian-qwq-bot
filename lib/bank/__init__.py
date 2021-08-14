@@ -9,26 +9,19 @@ import aiofiles
 class Bank:
     '''银行系统'''
 
-    def __init__(self, file: str, backup_path: str):
+    def __init__(self, file: str):
         self.file = file
-        self.backup_path = Path(backup_path)
 
     async def save(self, data):
-        await self.backup()
+
         async with aiofiles.open(self.file, 'w') as f:
             await f.write(ujson.dumps(data))
 
     async def load(self):
-        await self.backup()
+
         async with aiofiles.open(self.file, 'r') as f:
             return ujson.loads(await f.read())
 
-    async def backup(self):
-        '''备份'''
-        async with aiofiles.open(self.file, 'r') as f:
-            data = await f.read()
-        async with aiofiles.open(str(self.backup_path)+"/"+str(time.time())+Path(self.file).name, 'w') as f:
-            await f.write(data)
     
     async def ensure_account(self, account: str) -> bool:
         '''确保账号存在'''

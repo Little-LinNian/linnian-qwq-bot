@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 draw_card/
 cache/
-
+config.yml
 # C extensions
 *.so
 

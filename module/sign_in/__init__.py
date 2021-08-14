@@ -55,7 +55,7 @@ import asyncio
 from lib.limiter import limit
 from lib.bank import Bank
 
-bank = Bank("./data/bank.json","./data/bank_backup")
+bank = Bank("./data/bank.json")
 
 try:
     import ujson as json
