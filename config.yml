@@ -1,9 +1,9 @@
 # COS
-appid: "1302360504"
+appid: ""
 region: ap-hongkong
 bucket: links
-secret_id: AKIDb4Qlz7ZzZrutjO80xf7PUWKsCG5dp00l
-secret_key: f4D7nDSdXEgsoTs14PTO3Shz2oTv72Yr
-facekey: QFRmfrLM9UotTBMmOCKVOg1YGETQ5KnE
-facesecret: 2Wka1S8o5bU75LaBEFff4pmGKf-K63zB
-ADMIN: [2544704967]
+secret_id: 
+secret_key: 
+facekey: 
+facesecret: 
+ADMIN: []
