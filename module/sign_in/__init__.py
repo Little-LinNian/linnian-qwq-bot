@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 # 源代码来源许可证，代码有改动 repo: "https://github.com/opq-osc/opqqq-plugin"
-'''
+"""
 MIT License
 
 Copyright (c) 2020 fz6m
@@ -23,7 +23,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 
 from pathlib import Path
 from graia.saya import Saya, Channel
@@ -33,9 +33,10 @@ from avilla.execution.message import MessageSend
 from avilla.message.chain import MessageChain
 from avilla.relationship import Relationship
 from avilla.builtins.profile import MemberProfile, GroupProfile
-from avilla.builtins.elements import  PlainText, Notice
+from avilla.builtins.elements import PlainText, Notice
 from avilla.builtins.elements import Image as IMG
 from avilla.event.message import MessageEvent
+
 saya = Saya.current()
 channel = Channel.current()
 
@@ -87,20 +88,19 @@ hitokotoArchiveOpen = True
 
 # ==========================================
 
+
 @channel.use(ListenerSchema(listening_events=[MessageEvent]))
 async def sendmsg(event: MessageEvent, rs: Relationship[MemberProfile, GroupProfile]):
     if not event.message.as_display() == "签到":
         return
-    await limit("sign-in",rs,5)
+    await limit("sign-in", rs, 5)
     userQQ = rs.ctx.id
     msg = event.message.as_display()
     nickname = rs.ctx.profile.nickname
     resp = await mainProgram(msg, userQQ, nickname)
-    await rs.exec(
-        MessageSend(
-            resp
-        )
-    )
+    await rs.exec(MessageSend(resp))
+
+
 class Status(Enum):
 
     SUCCESS = "_success"
@@ -120,7 +120,6 @@ class Model(Enum):
 
 
 class Tools:
-
     @staticmethod
     def writeFile(p, content):
         with open(p, "w", encoding="utf-8") as f:
@@ -321,11 +320,9 @@ class SignIn(User):
 
     def createAvatar(self):
         size = self._basemapSize
-        avatarImgUrl = "http://q1.qlogo.cn/g?b=qq&nk={QQ}&s=640".format(
-            QQ=self._userQQ)
+        avatarImgUrl = "http://q1.qlogo.cn/g?b=qq&nk={QQ}&s=640".format(QQ=self._userQQ)
         res = self.getPictures(avatarImgUrl)
-        self._img = self.resize(Image.open(
-            BytesIO(res)).convert("RGBA"), (size, size))
+        self._img = self.resize(Image.open(BytesIO(res)).convert("RGBA"), (size, size))
         return self
 
     @staticmethod
@@ -380,8 +377,7 @@ class SignIn(User):
 
     def createAMagicCircle(self):
         size = self._magicCirclePlus + self._avatarSize
-        magicCircle = Image.open(
-            f"{RESOURCES_BASE_PATH}/magic-circle.png").convert("L")
+        magicCircle = Image.open(f"{RESOURCES_BASE_PATH}/magic-circle.png").convert("L")
         magicCircle = self.resize(magicCircle, (size, size))
         self._magicCircle = Image.new("RGBA", (size, size), (0, 0, 0, 0))
         self._magicCircle.putalpha(magicCircle)
@@ -391,8 +387,7 @@ class SignIn(User):
         self._textBaseMap = Image.new(
             "RGBA", self._textBaseMapSize, (0, 0, 0, transparency)
         )
-        self._textBaseMap = self.imageRadiusProcessing(
-            self._textBaseMap, transparency)
+        self._textBaseMap = self.imageRadiusProcessing(self._textBaseMap, transparency)
         return self
 
     def additionalMagicCircle(self):
@@ -419,8 +414,7 @@ class SignIn(User):
     def writePicture(
         self, img, text, position, fontName, fontSize, color=(255, 255, 255)
     ):
-        font = ImageFont.truetype(
-            f"{RESOURCES_BASE_PATH}/font/{fontName}", fontSize)
+        font = ImageFont.truetype(f"{RESOURCES_BASE_PATH}/font/{fontName}", fontSize)
         draw = ImageDraw.Draw(img)
         textSize = font.getsize(text)
         attenuation = self._fontAttenuation
@@ -596,16 +590,14 @@ class TimeUtils:
     @staticmethod
     def getTheCurrentTime():
         """%Y-%m-%d 格式的日期"""
-        nowDate = str(datetime.datetime.strftime(
-            datetime.datetime.now(), "%Y-%m-%d"))
+        nowDate = str(datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d"))
         return nowDate
 
     @staticmethod
     def getAccurateTimeNow():
         """%Y-%m-%d/%H:%M:%S 格式的日期"""
         nowDate = str(
-            datetime.datetime.strftime(
-                datetime.datetime.now(), "%Y-%m-%d/%H:%M:%S")
+            datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d/%H:%M:%S")
         )
         return nowDate
 
@@ -652,14 +644,18 @@ class TimeUtils:
 login_list = []
 
 
-async def mainProgram(msg,  userQQ, nickname):
+async def mainProgram(msg, userQQ, nickname):
     # Matching method one
     exactMatch = Tools.commandMatch(msg, commandList)
     if exactMatch:
         result = processing(userQQ, nickname)
         if not result == Status.FAILURE:
             resp = MessageChain.create(
-                [IMG.fromLocalFile(Path(f"{RESOURCES_BASE_PATH}/cache/{userQQ}.png").absolute())]
+                [
+                    IMG.fromLocalFile(
+                        Path(f"{RESOURCES_BASE_PATH}/cache/{userQQ}.png").absolute()
+                    )
+                ]
             )
             try:
                 await bank.deposit(userQQ, 60)
@@ -667,9 +663,7 @@ async def mainProgram(msg,  userQQ, nickname):
                 await bank.create_account(userQQ, 160)
             return resp
         else:
-            resp = MessageChain.create(
-                [PlainText("也许你今天已经签过到了")]
-            )
+            resp = MessageChain.create([PlainText("也许你今天已经签过到了")])
             return resp
 
 

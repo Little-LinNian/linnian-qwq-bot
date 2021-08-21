@@ -5,6 +5,7 @@ __pycache__/
 draw_card/
 cache/
 config.yml
+token.json
 # C extensions
 *.so
 
