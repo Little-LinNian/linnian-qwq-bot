@@ -12,8 +12,8 @@ from .config import path_dict, DRAW_PATH
 import pypinyin
 from PIL import UnidentifiedImageError
 from .create_img import CreateImg
-from avilla.message.chain import MessageChain
-from avilla.builtins.elements import Image
+from avilla.core.message.chain import MessageChain
+from avilla.core.builtins.elements import Image
 from loguru import logger
 import random
 from dataclasses import dataclass

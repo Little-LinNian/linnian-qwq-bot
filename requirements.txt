@@ -13,4 +13,16 @@ soupsieve==2.2.1
 typing-extensions==3.10.0.0
 ujson==4.0.2
 yarl==1.6.3
+python-dateutil
+psutil
+feedparser
+graia-saya
 lxml==4.6.3
+avilla-core
+uvicorn
+fastapi
+jieba
+coscmd
+numpy
+pyyaml
+httpx

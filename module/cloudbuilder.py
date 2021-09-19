@@ -3,17 +3,17 @@ import aiohttp
 import re
 import os
 import asyncio
-from avilla.builtins.profile  import GroupProfile, MemberProfile
-from avilla.builtins.elements import Image, PlainText
-from avilla.event.message import MessageEvent
-from avilla.provider import RawProvider
-from avilla.relationship import Relationship
+from avilla.core.builtins.profile  import GroupProfile, MemberProfile
+from avilla.core.builtins.elements import Image, Text
+from avilla.core.event.message import MessageEvent
+from avilla.core.provider import RawProvider
+from avilla.core.relationship import Relationship
 from graia.saya import Saya, Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
-from avilla.message.chain import MessageChain
-from avilla.exceptions import AccountMuted
+from avilla.core.message.chain import MessageChain
+from avilla.core.exceptions import AccountMuted
 from lib import img2text, limiter
-from avilla.execution.message import MessageSend
+from avilla.core.execution.message import MessageSend
 
 # 插件信息
 __name__ = "NetworkCompiler"
@@ -35,7 +35,7 @@ channel.author(__author__)
 )
 async def network_compiler(
         event: MessageEvent,
-        rs: Relationship[MemberProfile,GroupProfile]
+        rs: Relationship
 ):
     message_text = event.message.as_display()
     if not message_text.startswith("#编译 "):

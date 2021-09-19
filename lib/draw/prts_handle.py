@@ -1,9 +1,9 @@
 import random
 from dataclasses import dataclass
 from pathlib import Path
-from avilla.builtins.elements import Image, PlainText
-from avilla.message.chain import MessageChain
-from avilla.provider import HttpGetProvider, RawProvider
+from avilla.core.builtins.elements import Image, Text
+from avilla.core.message.chain import MessageChain
+from avilla.core.provider import HttpGetProvider, RawProvider
 from loguru import logger
 
 from .announcement import PrtsAnnouncement
@@ -77,7 +77,7 @@ async def prts_draw(count: int = 300):
     pool_info = f"当前up池: {_CURRENT_POOL_TITLE}\n{tmp}" if _CURRENT_POOL_TITLE else ""
     resp = MessageChain.create(
         [
-            PlainText(pool_info),
+            Text(pool_info),
             Image.fromLocalFile(
                 Path(await generate_img(operator_list, "prts", star_list))
             ),

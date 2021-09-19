@@ -1,16 +1,16 @@
 from pathlib import Path
-from avilla.builtins.profile import GroupProfile, MemberProfile
-from avilla.message.chain import MessageChain
-from avilla.builtins.elements import PlainText
-from avilla.builtins.elements import Image
+from avilla.core.builtins.profile import GroupProfile, MemberProfile
+from avilla.core.message.chain import MessageChain
+from avilla.core.builtins.elements import Text
+from avilla.core.builtins.elements import Image
 from asyncio import to_thread
 from lib.limiter import group_limit
-from avilla.event.message import MessageEvent
+from avilla.core.event.message import MessageEvent
 from graia.saya import Saya, Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
-from avilla.exceptions import AccountMuted
-from avilla.execution.message import MessageSend
-from avilla.relationship import Relationship
+from avilla.core.exceptions import AccountMuted
+from avilla.core.execution.message import MessageSend
+from avilla.core.relationship import Relationship
 
 
 from .utils import genImage
@@ -44,19 +44,19 @@ async def pornhub_style_logo_generator(
         message = event.message
         _, left_text, right_text = message.as_display().split(" ")
         if message.has(Image):
-            await rs.exec(MessageSend(MessageChain.create([PlainText(text="不支持的内容！不要给我一些稀奇古怪的东西！")])))
+            await rs.exec(MessageSend(MessageChain.create([Text(text="不支持的内容！不要给我一些稀奇古怪的东西！")])))
             return
         try:
             try:
                 await to_thread( genImage(word_a=left_text, word_b=right_text).save,"./data/5000zhao/test.png")
             except TypeError:
-                await rs.exec(MessageSend(MessageChain.create([PlainText(text="不支持的内容！不要给我一些稀奇古怪的东西！")])))
+                await rs.exec(MessageSend(MessageChain.create([Text(text="不支持的内容！不要给我一些稀奇古怪的东西！")])))
                 return None
             await rs.exec(MessageSend( MessageChain.create([Image.fromLocalFile(Path("./data/5000zhao/test.png"))])))
         except AccountMuted:
             pass
     except ValueError:
         try:
-            await rs.exec(MessageSend( MessageChain.create([PlainText(text="参数非法！使用格式：5000兆 text1 text2")])))
+            await rs.exec(MessageSend( MessageChain.create([Text(text="参数非法！使用格式：5000兆 text1 text2")])))
         except AccountMuted:
             pass

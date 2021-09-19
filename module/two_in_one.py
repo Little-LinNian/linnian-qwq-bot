@@ -1,18 +1,18 @@
 from pathlib import Path
-from avilla.event import message
+from avilla.core.event import message
 from graia.saya import Saya, Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 import random
 import base64
 import time
-from avilla.provider import RawProvider
-from avilla.execution.message import MessageSend
-from avilla.message.chain import MessageChain
-from avilla.relationship import Relationship
-from avilla.builtins.profile import MemberProfile, GroupProfile
-from avilla.builtins.elements import PlainText, Notice
-from avilla.builtins.elements import Image
-from avilla.event.message import MessageEvent
+from avilla.core.provider import RawProvider
+from avilla.core.execution.message import MessageSend
+from avilla.core.message.chain import MessageChain
+from avilla.core.relationship import Relationship
+from avilla.core.builtins.profile import MemberProfile, GroupProfile
+from avilla.core.builtins.elements import Text, Notice
+from avilla.core.builtins.elements import Image
+from avilla.core.event.message import MessageEvent
 from lib.bank import Bank
 import ujson
 import lib.config as ucfg
@@ -24,13 +24,13 @@ channel = Channel.current()
 
 @channel.use(ListenerSchema(listening_events=[MessageEvent]))
 async def handle_message(
-    event: MessageEvent, rs: Relationship[MemberProfile, GroupProfile]
+    event: MessageEvent, rs: Relationship
 ):
     if not event.message.as_display().startswith("#转基因"):
         return
     message = event.message
     if not message.has(Image) or len(message.get(Image)) != 2:
-        await rs.exec(MessageSend(MessageChain.create([PlainText("要发两张图片哦 uwu")])))
+        await rs.exec(MessageSend(MessageChain.create([Text("要发两张图片哦 uwu")])))
         return
     image1 = message.get(Image)[0].provider.url
     image2 = message.get(Image)[1].provider.url
@@ -52,7 +52,7 @@ async def handle_message(
                 await rs.exec(
                     MessageSend(
                         MessageChain.create(
-                            [PlainText("转基因成功 uwu"), Image(RawProvider(result_bytes))]
+                            [Text("转基因成功 uwu"), Image(RawProvider(result_bytes))]
                         )
                     )
                 )
@@ -61,8 +61,8 @@ async def handle_message(
                     MessageSend(
                         MessageChain.create(
                             [
-                                PlainText("转基因失败 qwq\n"),
-                                PlainText(resp_data["error_message"]),
+                                Text("转基因失败 qwq\n"),
+                                Text(resp_data["error_message"]),
                             ]
                         )
                     )

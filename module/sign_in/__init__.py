@@ -29,13 +29,13 @@ from pathlib import Path
 from graia.saya import Saya, Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 
-from avilla.execution.message import MessageSend
-from avilla.message.chain import MessageChain
-from avilla.relationship import Relationship
-from avilla.builtins.profile import MemberProfile, GroupProfile
-from avilla.builtins.elements import PlainText, Notice
-from avilla.builtins.elements import Image as IMG
-from avilla.event.message import MessageEvent
+from avilla.core.execution.message import MessageSend
+from avilla.core.message.chain import MessageChain
+from avilla.core.relationship import Relationship
+from avilla.core.builtins.profile import MemberProfile, GroupProfile
+from avilla.core.builtins.elements import Text, Notice
+from avilla.core.builtins.elements import Image as IMG
+from avilla.core.event.message import MessageEvent
 
 saya = Saya.current()
 channel = Channel.current()
@@ -90,7 +90,7 @@ hitokotoArchiveOpen = True
 
 
 @channel.use(ListenerSchema(listening_events=[MessageEvent]))
-async def sendmsg(event: MessageEvent, rs: Relationship[MemberProfile, GroupProfile]):
+async def sendmsg(event: MessageEvent, rs: Relationship):
     if not event.message.as_display() == "签到":
         return
     await limit("sign-in", rs, 5)
@@ -663,7 +663,7 @@ async def mainProgram(msg, userQQ, nickname):
                 await bank.create_account(userQQ, 160)
             return resp
         else:
-            resp = MessageChain.create([PlainText("也许你今天已经签过到了")])
+            resp = MessageChain.create([Text("也许你今天已经签过到了")])
             return resp
 
 

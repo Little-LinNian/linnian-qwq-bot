@@ -8,7 +8,7 @@ import ujson
 import aiofiles
 from .code_get import get_code
 import psutil
-from avilla import Avilla
+from avilla.core import Avilla
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from graia.saya import Saya
@@ -129,7 +129,7 @@ def get_sys_info_sync():
             "OSSName": sys_name, "OS": sys_pl,
             "MMInfo": total_mem, "IP": ip,
             "AvillaVersion": avilla_version,
-            "AvillaProtocol": str(avilla.protocol.platform.name),
+            "AvillaProtocol": str(avilla.protocol.platform.name+" "+avilla.protocol.platform.implementation+" "+avilla.protocol.platform.supported_impl_version),
             "Plugins": len(saya.channels.keys()),
             "PythonVersion": sys.version[:5],
 

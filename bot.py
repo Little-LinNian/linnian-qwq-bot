@@ -2,23 +2,24 @@ import asyncio
 import os
 import aiohttp
 import avilla
-from avilla.entity import EntityPtr
+from avilla.core.event import request
 import uvicorn
 from lib import token as tku
 import api
 import ujson
-from avilla.execution.fetch import FetchStranger
-from avilla import Avilla
-from avilla.builtins.elements import Image, PlainText
-from avilla.builtins.profile import GroupProfile, MemberProfile, StrangerProfile
-from avilla.event.message import MessageEvent
-from avilla.execution.message import MessageSend
-from avilla.message.chain import MessageChain
-from avilla.network.clients.aiohttp import AiohttpWebsocketClient
+from avilla.core.execution.fetch import FetchStranger
+from avilla.core import Avilla
+from avilla.core.builtins.elements import Image, Text
+from avilla.core.builtins.profile import GroupProfile, MemberProfile, StrangerProfile
+from avilla.core.event.message import MessageEvent
+from avilla.core.execution.message import MessageSend
+from avilla.core.message.chain import MessageChain
+from avilla.core.event.request import GroupJoinRequest
+from avilla.core.network.clients.aiohttp import AiohttpWebsocketClient
 from avilla.onebot.config import OnebotConfig, WebsocketCommunication
 from avilla.onebot.protocol import OnebotProtocol
-from avilla.provider import RawProvider
-from avilla.relationship import Relationship
+from avilla.core.provider import RawProvider
+from avilla.core.relationship import Relationship
 from lib import img2text
 from graia.broadcast import Broadcast
 from graia.saya import Saya
@@ -50,8 +51,7 @@ with saya.module_context():
     saya.require("module.two_in_one")
     saya.require("module.prme")
     saya.require("module.longtu")
-    #saya.require("module.yingyu")
-    saya.require("module.5000zhao")
+    saya.require("module.yingyu")
     saya.require("module.cloudbuilder")
     saya.require("module.rss")
 session = aiohttp.ClientSession(loop=loop)
@@ -86,7 +86,7 @@ async def menu(event: MessageEvent, rs: Relationship):
 
 
 @bcc.receiver(MessageEvent)
-async def saya_manager(event: MessageEvent, rs: Relationship[MemberProfile,GroupProfile]):
+async def saya_manager(event: MessageEvent, rs: Relationship):
     cfg = await get_config()
     if not rs.ctx.profile.group.id not in cfg["ADMIN"]:
         return
@@ -100,7 +100,7 @@ async def saya_manager(event: MessageEvent, rs: Relationship[MemberProfile,Group
             await rs.exec(
                 MessageSend(
                     MessageChain.create(
-                        [PlainText("Module {} has been uninstalled".format(module))]
+                        [Text("Module {} has been uninstalled".format(module))]
                     )
                 )
             )
@@ -109,7 +109,7 @@ async def saya_manager(event: MessageEvent, rs: Relationship[MemberProfile,Group
                 MessageSend(
                     MessageChain.create(
                         [
-                            PlainText(
+                            Text(
                                 "Module {} cannot be uninstalled,Because {}".format(
                                     module, str(e)
                                 )
@@ -126,7 +126,7 @@ async def saya_manager(event: MessageEvent, rs: Relationship[MemberProfile,Group
             await rs.exec(
                 MessageSend(
                     MessageChain.create(
-                        [PlainText("Module {} has been installed".format(module))]
+                        [Text("Module {} has been installed".format(module))]
                     )
                 )
             )
@@ -135,7 +135,7 @@ async def saya_manager(event: MessageEvent, rs: Relationship[MemberProfile,Group
                 MessageSend(
                     MessageChain.create(
                         [
-                            PlainText(
+                            Text(
                                 "Module {} cannot be installed,Because {}".format(
                                     module, str(e)
                                 )
@@ -152,7 +152,7 @@ async def saya_manager(event: MessageEvent, rs: Relationship[MemberProfile,Group
             await rs.exec(
                 MessageSend(
                     MessageChain.create(
-                        [PlainText("Module {} has been reloaded".format(module))]
+                        [Text("Module {} has been reloaded".format(module))]
                     )
                 )
             )
@@ -161,7 +161,7 @@ async def saya_manager(event: MessageEvent, rs: Relationship[MemberProfile,Group
                 MessageSend(
                     MessageChain.create(
                         [
-                            PlainText(
+                            Text(
                                 "Module {} cannot be reloaded,Because {}".format(
                                     module, str(e)
                                 )
@@ -174,12 +174,12 @@ async def saya_manager(event: MessageEvent, rs: Relationship[MemberProfile,Group
         msg = ""
         for i in saya.channels.keys():
             msg += f"{i} "
-        await rs.exec(MessageSend(MessageChain.create([PlainText(msg)])))
+        await rs.exec(MessageSend(MessageChain.create([Text(msg)])))
 
 @bcc.receiver(MessageEvent)
-async def token_g(event: MessageEvent, rs: Relationship[MemberProfile,GroupProfile]):
+async def token_g(event: MessageEvent, rs: Relationship):
     cfg = await get_config()
-    if not rs.ctx.profile.group.id not in cfg["ADMIN"]:
+    if not rs.ctx.profile.group.id  in cfg["ADMIN"]:
         return
     if  event.message.as_display() == "#面板token":
         token = await tku.get_token(32)
@@ -193,7 +193,7 @@ async def token_g(event: MessageEvent, rs: Relationship[MemberProfile,GroupProfi
                 await f.write(ujson.dumps(data))
             await rs.exec(
                 MessageSend(
-                    MessageChain.create([PlainText("已经获取到token，请查看私聊")]),
+                    MessageChain.create([Text("已经获取到token，请查看私聊")]),
                 )
             )
             await app.protocol._ws_client_send_packet("send_private_msg", {
@@ -214,9 +214,10 @@ async def on_launch():
     api.saya = saya
 
     api.avilla = app
-    await asyncio.to_thread(uvicorn.run, app=api.app, host="0.0.0.0", port=7050)
+    # await asyncio.to_thread(uvicorn.run, app=api.app, host="0.0.0.0", port=7050, ssl_keyfile="./api.bot.linnian.icu.key", ssl_certfile="./1_api.bot.linnian.icu_bundle.crt")
 try:
-    app.launch_blocking()
+    while True:
+        app.launch_blocking()
 except KeyboardInterrupt:
     quit()
  

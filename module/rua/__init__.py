@@ -3,7 +3,7 @@ from io import BytesIO
 from os import path, wait
 from pathlib import Path
 from PIL import Image as im
-from avilla.builtins.profile import GroupProfile, MemberProfile
+from avilla.core.builtins.profile import GroupProfile, MemberProfile
 from .rua_data.data_source import generate_gif
 import aiohttp
 import loguru
@@ -11,11 +11,11 @@ import os
 from graia.saya import Saya, Channel
 from graia.saya.builtins.broadcast.schema import ListenerSchema
 from lib import limiter
-from avilla.execution.message import MessageSend
-from avilla.message.chain import MessageChain
-from avilla.relationship import Relationship
-from avilla.builtins.elements import Image, PlainText, Notice
-from avilla.event.message import MessageEvent
+from avilla.core.execution.message import MessageSend
+from avilla.core.message.chain import MessageChain
+from avilla.core.relationship import Relationship
+from avilla.core.builtins.elements import Image, Text, Notice
+from avilla.core.event.message import MessageEvent
 
 saya = Saya.current()
 channel = Channel.current()
@@ -35,8 +35,8 @@ async def ruaer(id):
 
 
 @channel.use(ListenerSchema(listening_events=[MessageEvent]))
-async def rua(event: MessageEvent, rs: Relationship[MemberProfile,GroupProfile]):
-    if event.message.has(Notice) and event.message.get_first(PlainText).text == "搓":
+async def rua(event: MessageEvent, rs: Relationship):
+    if event.message.has(Notice) and event.message.get_first(Text).text == "搓":
 
         await limiter.limit("rua", rs, 5)
         qid = event.message.get(Notice)[0].target
